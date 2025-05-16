@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Convite para Miri</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #fff0f5;
+    color: #330000;
+    text-align: center;
+    margin: 0; padding: 0;
+  }
+  .container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #ffe4e1;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 15px #b35a5a;
+  }
+  h1 {
+    color: #b22222;
+  }
+  button {
+    background: #b22222;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    margin: 15px 10px;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #8b0000;
+  }
+  input[type="text"], input[type="date"] {
+    font-size: 18px;
+    padding: 8px;
+    width: 80%;
+    margin: 10px 0 20px 0;
+    border-radius: 8px;
+    border: 1px solid #b22222;
+  }
+  .hidden {
+    display: none;
+  }
+  .gif-final {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 15px;
+  }
+  .countdown {
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-top: 20px;
+    color: #b22222;
+  }
+  .footer {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #660000;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Página 1 -->
+<div id="page1">
+  <h1>Oi Miri!</h1>
+  <p>Rainha do futebol, ratinha de academia e parceira pra qualquer zoeira! Que tal um encontro com risadas, drinks e aquele toque apimentado? 😏🔥</p>
+  <button onclick="showPage(2)">Descobrir</button>
+</div>
+
+<!-- Página 2 -->
+<div id="page2" class="hidden">
+  <h2>Qual delícia vai deixar nosso encontro ainda mais saboroso?</h2>
+  <button onclick="chooseFood('Comida Italiana 🍝')">Comida Italiana 🍝</button>
+  <button onclick="chooseFood('Comida Japonesa 🍣')">Comida Japonesa 🍣</button>
+  <button onclick="chooseFood('Comida Americana 🍔')">Comida Americana 🍔</button>
+  <button onclick="chooseFood('Outro')">Outro</button>
+  <div id="foodOtherInput" class="hidden">
+    <input type="text" id="foodOtherText" placeholder="Me conta qual é..." maxlength="30" />
+    <button onclick="submitFoodOther()">Ok</button>
+  </div>
+</div>
+
+<!-- Página 3 -->
+<div id="page3" class="hidden">
+  <h2>Depois do rango, o que te apetece?</h2>
+  <button onclick="chooseRoll('Cinema 🎬')">Cinema 🎬</button>
+  <button onclick="chooseRoll('Boliche 🎳')">Boliche 🎳</button>
+  <button onclick="chooseRoll('Karaokê 🎤')">Karaokê 🎤</button>
+  <button onclick="chooseRoll('Sinuca 🎱')">Sinuca 🎱</button>
+  <button onclick="chooseRoll('Outro')">Outro</button>
+  <div id="rollOtherInput" class="hidden">
+    <input type="text" id="rollOtherText" placeholder="Bora inovar..." maxlength="30" />
+    <button onclick="submitRollOther()">Ok</button>
+  </div>
+</div>
+
+<!-- Página 4 -->
+<div id="page4" class="hidden">
+  <h2>Agora escolhe o dia pra gente botar esse plano em prática. Quero tudo confirmado, hein?</h2>
+  <input type="date" id="datePicker" min="" />
+  <br />
+  <button onclick="submitDate()">Confirmar Data</button>
+</div>
+
+<!-- Página 5 -->
+<div id="page5" class="hidden">
+  <h2>Chegamos na reta final, Miri... aceita essa aventura cheia de zoeira, risadas e aquele toque sexy? 🔥😉</h2>
+  <button onclick="acceptInvite()">Aceito</button>
+  <button id="btnNo" onmouseover="moveNoButton()">Não aceito</button>
+</div>
+
+<!-- Página 6 -->
+<div id="page6" class="hidden">
+  <h1>Vai ser incrível, Miri! 💖</h1>
+  <p>Nosso encontro está marcado para <span id="finalDate"></span>.</p>
+  <p>Vamos comer: <span id="finalFood"></span></p>
+  <p>Depois, vamos para: <span id="finalRoll"></span></p>
+  <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Gif divertido" class="gif-final" />
+  <div class="countdown" id="countdown"></div>
+  <div class="footer">Mal posso esperar, Miri!</div>
+</div>
+
+</div>
+
+<script>
+  const name = "Miri";
+
+  // Ajustar data mínima do calendário para hoje
+  const datePicker = document.getElementById('datePicker');
+  const today = new Date().toISOString().split('T')[0];
+  datePicker.min = today;
+
+  // Estado
+  let chosenFood = '';
+  let chosenRoll = '';
+  let chosenDate = '';
+
+  function showPage(num) {
+    for (let i = 1; i <= 6; i++) {
+      document.getElementById('page' + i).classList.add('hidden');
+    }
+    document.getElementById('page' + num).classList.remove('hidden');
+  }
+
+  // Comida
+  function chooseFood(food) {
+    if (food === 'Outro') {
+      document.getElementById('foodOtherInput').classList.remove('hidden');
+    } else {
+      chosenFood = food;
+      showPage(3);
+    }
+  }
+  function submitFoodOther() {
+    const val = document.getElementById('foodOtherText').value.trim();
+    if (val) {
+      chosenFood = val + ' 🍽️';
+      document.getElementById('foodOtherInput').classList.add('hidden');
+      showPage(3);
+    } else {
+      alert('Por favor, escreva algo.');
+    }
+  }
+
+  // Rolê
+  function chooseRoll(roll) {
+    if (roll === 'Outro') {
+      document.getElementById('rollOtherInput').classList.remove('hidden');
+    } else {
+      chosenRoll = roll;
+      showPage(4);
+    }
+  }
+  function submitRollOther() {
+    const val = document.getElementById('rollOtherText').value.trim();
+    if (val) {
+      chosenRoll = val + ' 🔥';
+      document.getElementById('rollOtherInput').classList.add('hidden');
+      showPage(4);
+    } else {
+      alert('Por favor, escreva algo.');
+    }
+  }
+
+  // Data
+  function submitDate() {
+    const dateVal = datePicker.value;
+    if (!dateVal) {
+      alert('Escolha uma data.');
+      return;
+    }
+    chosenDate = dateVal;
+    showPage(5);
+  }
+
+  // Botão "Não aceito" que foge do cursor
+  const btnNo = document.getElementById('btnNo');
+  function moveNoButton() {
+    const btn = btnNo;
+    const container = btn.parentElement.getBoundingClientRect();
+    const maxX = container.width - btn.offsetWidth;
+    const maxY = container.height - btn.offsetHeight;
+
+    const randX = Math.floor(Math.random() * maxX);
+    const randY = Math.floor(Math.random() * maxY);
+
+    btn.style.position = 'absolute';
+    btn.style.left = randX + 'px';
+    btn.style.top = randY + 'px';
+  }
+
+  // Aceitar convite
+  function acceptInvite() {
+    // Preencher dados finais
+    const finalDate = new Date(chosenDate);
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    document.getElementById('finalDate').textContent = finalDate.toLocaleDateString('pt-BR', options);
+    document.getElementById('finalFood').textContent = chosenFood;
+    document.getElementById('finalRoll').textContent = chosenRoll;
+
+    // Mostrar página final
+    showPage(6);
+
+    // Iniciar contagem regressiva
+    startCountdown(finalDate);
+  }
+
+  // Contador regressivo
+  function startCountdown(targetDate) {
+    const countdownEl = document.getElementById('countdown');
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+      if (diff <= 0) {
+        countdownEl.textContent = "O grande dia chegou! 🎉";
+        clearInterval(interval);
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      countdownEl.textContent = `Faltam ${days} dias, ${hours}h ${minutes}m ${seconds}s para o nosso encontro! 💖`;
+    }
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+  }
+</script>
+</body>
+</html>
